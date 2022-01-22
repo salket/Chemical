@@ -167,6 +167,9 @@
 	(is-a node)
 	(role concrete))
 
+;+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;+--------------------------------------------------------------------------------FUNCTIONS---------------------------------------------------------------------------------
+;+ Asking question for specific_gravity_reading && solubility_reading && colour_reading && radioactivity_reading && smell_reading && spectrometry_reading && hazards_reading
 
 (deffunction ask_question (?question $?allowed_values)
    (printout t ?question)
@@ -177,7 +180,7 @@
       (bind ?temp (read))
       (if (lexemep ?answer) 
           then (bind ?answer ?temp )))
-   ?answer)
+   return ?answer)
 
 (deffunction ask_question_number (?question )
    (printout t ?question)
@@ -186,17 +189,48 @@
       (printout t "Given wrong input  : " ?answer crlf)
 	  (printout t ?question)
       (bind ?temp (read)))
-   ?answer)
+   return ?answer)
 
 
+;+--------------------------------------------------------------------------------RULES---------------------------------------------------------------------------------
 
-(defrule reading_metric
-   =>
-   (bind ?typeOfmetric  (ask_question "Gia poies metriseis tha dothoyn times? (pH solubility spectrometry colour smell specific_gravity radioactivity): " pH solubility spectrometry colour smell specific_gravity radioactivity))
-   (assert (typeOfmetric ?typeOfmetric))
-   (printout t "Given type of metric  : " ?typeOfmetric crlf)
+(defrule inputOfmetrics
+
+	=>
+	(printout t "Gia poies metriseis tha dothoyn times? (pH solubility spectrometry colour smell specific_gravity radioactivity) ")
+	(bind $?answer(readline))
+	(bind $?typeOfmetric (explode$ $?answer))
+	 (if (member pH ?typeOfmetric)	
+	 then(
+		 printout t "to pH einai mesa "  crlf)
+		 (assert (typeOfmetric pH )))
+
+	 (if (member solubility ?typeOfmetric)	
+	 then(printout t "to solubility einai mesa "  crlf)
+	 (assert (typeOfmetric solubility )))
+
+	 (if (member spectrometry ?typeOfmetric)	
+	 then(printout t "to spectrometry einai mesa "  crlf)
+	 (assert (typeOfmetric spectrometry )))
+
+	 (if (member colour ?typeOfmetric)	
+	 then(printout t "to colour einai mesa "  crlf)
+	 (assert (typeOfmetric colour )))
+
+	 (if (member smell ?typeOfmetric)	
+	 then(printout t "to smell einai mesa "  crlf)
+	 (assert (typeOfmetric smell )))
+
+	 (if (member specific_gravity ?typeOfmetric)	
+	 then(printout t "to specific_gravity einai mesa "  crlf)
+	 (assert (typeOfmetric specific_gravity )))
+	 
+	 (if (member radioactivity ?typeOfmetric)	
+	 then(printout t "to radioactivity einai mesa "  crlf)
+	 (assert (typeOfmetric radioactivity )))
+    
 )
-   
+
 
 (defrule pH_reading
 	(typeOfmetric pH) 
@@ -239,7 +273,7 @@
    (printout t "Given radioactivity : " ?radioactivity_value crlf)
 )
 
-(defrule smell_reading
+(defrule smell_reading 
 	(typeOfmetric smell) 
    =>
    (bind ?smell_value  (ask_question "Poio einai to smell ( none vinegar choking ): " none vinegar choking ))
@@ -255,7 +289,7 @@
    (printout t "Given hazards : " ?hazards_value crlf)
 )
 
-(defrule spectrometry_reading
+(defrule spectrometry_reading 
 	(typeOfmetric spectrometry) 
    =>
    (bind ?spectrometry_value  (ask_question "Ti timh exei to spectrometry ( none sulphur carbon sodium metal ): " none sulphur carbon sodium metal ))
@@ -263,22 +297,16 @@
    (printout t "Given spectrometry : " ?spectrometry_value crlf)
 )
 
-
-
-
-
-
-
-
-;+(defrule type_of_chemical_by_pH
-;+	(ph_value  ?x)
-;+   =>
+;+defrule ask-data
+;+		(object (is-a chemical)
+;+			(name ?x)
+;+			(colour red))
+;+	=>
+;+		(printout t "Chemical:" ?x crlf))
 ;+
-;+(if (> ?x ?answer) 
-;+          then (printout t "14>pH>0 : " ?ph_value crlf))
-;+)
 
 
+;+--------------------------------------------------------------------------------NOTES---------------------------------------------------------------------------------
 ;+colour          
 ;+hazards         
 ;+pH-high         
@@ -423,8 +451,3 @@
 ;+		  specific_gravity equal_1
 ;+		  spectrometry     carbon 
 ;+        stored in        3 6 
-
-
-
-
-
