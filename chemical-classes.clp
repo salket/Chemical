@@ -185,11 +185,11 @@
 (deffunction ask_question_number (?question )
    (printout t ?question)
    (bind ?answer (read))
-   (while ( and  ( < ?answer 0) ( > ?answer 14)) do
+   (while ( not(and ( > ?answer 0) ( <= ?answer 14))) do
       (printout t "Given wrong input  : " ?answer crlf)
 	  (printout t ?question)
-      (bind ?temp (read)))
-   return ?answer)
+      (bind ?answer (read)))
+    ?answer)
 
 
 ;+--------------------------------------------------------------------------------RULES---------------------------------------------------------------------------------
@@ -236,9 +236,8 @@
 	(typeOfmetric pH) 
    =>
    (bind ?ph_value  (ask_question_number "Poso einai to pH: " ))
-   (printout t "Given pH before assert : " ?ph_value crlf)
    (assert (ph_value ?ph_value))
-   (printout t "Given pH : " ?ph_value crlf)
+   ;+(printout t "Given pH : " ?ph_value crlf)
 )
 
 (defrule specific_gravity_reading
@@ -297,13 +296,19 @@
    (printout t "Given spectrometry : " ?spectrometry_value crlf)
 )
 
-;+defrule ask-data
-;+		(object (is-a chemical)
-;+			(name ?x)
-;+			(colour red))
-;+	=>
-;+		(printout t "Chemical:" ?x crlf))
-;+
+(defrule suspect_pH
+  (ph_value ?pH)
+  (object (is-a chemical)
+     (name ?x)
+     (pH-high ?phH)
+     (pH-low ?phL))
+=>
+    (if (< ?phH ?pH)
+	  then
+      (assert (suspect ?x))
+      (printout t "Chemical:" ?pH ?phH crlf)
+    )
+)
 
 
 ;+--------------------------------------------------------------------------------NOTES---------------------------------------------------------------------------------
