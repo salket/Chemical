@@ -303,7 +303,7 @@
      (pH-high ?phH)
      (pH-low ?phL))
 =>
-    (if (< ?phH ?pH)
+    (if (and(> ?pH ?phL) (< ?pH ?phH))
 	  then
       (assert (suspect ?x))
       (printout t "Chemical:" ?pH ?phH crlf)
