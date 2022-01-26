@@ -236,21 +236,50 @@
 	(if (member radioactivity ?typeOfmetric)	
 	then
 		(bind ?radioactivity_value  (ask_question "Einai radioactive ( yes no ): " yes no ))
-   		(assert (colour_value ?radioactivity_value)))
+   		(assert (radioactivity_value ?radioactivity_value)))
 
 )
 ;+-----------network-----------
-;+(defrule storeXsuspects   
-;+	(suspect ?y)  
-;+	(object (is-a store)        
+(defrule storeXsuspects   
+	(declare (salience -1))
+	(suspect ?y)  
+	(object (is-a store)        
+		(name ?x) 
+		(contents $?contents))                             
+=>     	
+	(if  (member ?y $?contents ) 
+	then 
+	    (printout t "Suspect : " ?y   "in list " $?contents  crlf)
+		(assert (sus_store ?x))  
+	)                              
+)
+
+(defrule sus_manhole  
+	(declare (salience 1))
+	(sus_store ?y)  
+	(object (is-a store)        
+		(name ?x) 
+		(downstream ?downstream))                             
+=>    
+	(printout t "store : " ?y "downstream : " ?downstream crlf)
+	(assert (sus_manhole ?downstream))                      
+) 
+
+
+
+;+(defrule manholeXsuspects   
+;+	(declare (salience -3))
+;+	(sus_store ?y)  
+;+	(object (is-a manhole)        
 ;+		(name ?x) 
-;+		(contents $?contents)                
-;+	 	(downstream ?k))                             
-;+=>         
-;+	(if  (member ?y $?contents )        
-;+	   	(assert (sus_store ?x))  
-;+	)                              
+;+		(downstream ?downstream))                             
+;+=>    
+;+	(printout t "store : " ?y  crlf)
+;+	(assert (connected ?x ?downstream))                      
 ;+) 
+
+
+
 
 
 
