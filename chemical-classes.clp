@@ -255,29 +255,42 @@
 )
 
 (defrule sus_manhole  
-	(declare (salience 1))
+	(declare (salience -2))
 	(sus_store ?y)  
 	(object (is-a store)        
 		(name ?x) 
 		(downstream ?downstream))                             
 =>    
-	(printout t "store : " ?y "downstream : " ?downstream crlf)
-	(assert (sus_manhole ?downstream))                      
+	(if (eq ?y ?x)
+	then
+		(printout t "store : " ?y "downstream : " ?downstream crlf)
+		(assert (sus_manhole ?downstream))  )                   
 ) 
 
 
+(defrule manholeXsuspects   
+	(declare (salience -3))
+	(sus_manhole ?y)  
+	(object (is-a manhole)        
+		(name ?x) 
+		(downstream ?downstream))                             
+=>   
+ (if (eq ?y ?x)
+ then
+	(assert (connected ?x ?downstream)) )                     
+) 
 
-;+(defrule manholeXsuspects   
-;+	(declare (salience -3))
-;+	(sus_store ?y)  
-;+	(object (is-a manhole)        
-;+		(name ?x) 
-;+		(downstream ?downstream))                             
-;+=>    
-;+	(printout t "store : " ?y  crlf)
-;+	(assert (connected ?x ?downstream))                      
-;+) 
-
+(defrule manholeXsuspects1   
+	(declare (salience -4))
+	(sus_manhole ?y)  
+	(object (is-a manhole)        
+		(name ?x) 
+		(downstream ?downstream))                             
+=>   
+ (if (eq ?y ?x)
+ then
+	(assert (connected ?x ?downstream)) )                     
+) 
 
 
 
