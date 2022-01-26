@@ -194,128 +194,187 @@
 
 ;+--------------------------------------------------------------------------------RULES---------------------------------------------------------------------------------
 
-(defrule inputOfmetrics
-
+;+------------Input------------
+(defrule inputOfmetrics "Input"
+	(initial-fact)
 	=>
 	(printout t "Gia poies metriseis tha dothoyn times? (pH solubility spectrometry colour smell specific_gravity radioactivity) ")
 	(bind $?answer(readline))
 	(bind $?typeOfmetric (explode$ $?answer))
-	 (if (member pH ?typeOfmetric)	
-	 then(
-		 printout t "to pH einai mesa "  crlf)
-		 (assert (typeOfmetric pH )))
-
-	 (if (member solubility ?typeOfmetric)	
-	 then(printout t "to solubility einai mesa "  crlf)
-	 (assert (typeOfmetric solubility )))
-
-	 (if (member spectrometry ?typeOfmetric)	
-	 then(printout t "to spectrometry einai mesa "  crlf)
-	 (assert (typeOfmetric spectrometry )))
-
-	 (if (member colour ?typeOfmetric)	
-	 then(printout t "to colour einai mesa "  crlf)
-	 (assert (typeOfmetric colour )))
-
-	 (if (member smell ?typeOfmetric)	
-	 then(printout t "to smell einai mesa "  crlf)
-	 (assert (typeOfmetric smell )))
-
-	 (if (member specific_gravity ?typeOfmetric)	
-	 then(printout t "to specific_gravity einai mesa "  crlf)
-	 (assert (typeOfmetric specific_gravity )))
 	 
-	 (if (member radioactivity ?typeOfmetric)	
-	 then(printout t "to radioactivity einai mesa "  crlf)
-	 (assert (typeOfmetric radioactivity )))
-    
+	(if (member pH ?typeOfmetric)	
+	then
+		(bind ?ph_value  (ask_question_number "Poso einai to pH: " ))
+    	(assert (ph_value ?ph_value)))
+
+	(if (member solubility ?typeOfmetric)	
+	then
+		(bind ?solubility_value  (ask_question "Poio einai to solubility( soluble insoluble ) : " soluble insoluble ))
+   		(assert (solubility_value ?solubility_value)))
+   		
+	(if (member spectrometry ?typeOfmetric)	
+	then
+		(bind ?spectrometry_value  (ask_question "Ti timh exei to spectrometry ( none sulphur carbon sodium metal ): " none sulphur carbon sodium metal ))
+  		(assert (spectrometry_value ?spectrometry_value)))
+
+	(if (member colour ?typeOfmetric)	
+	then
+		(bind ?colour_value  (ask_question "Poso einai to colour( clear red white ): " clear red white ))
+   		(assert (colour_value ?colour_value)))
+
+	(if (member smell ?typeOfmetric)	
+	then
+		(bind ?smell_value  (ask_question "Poio einai to smell ( none vinegar choking ): " none vinegar choking ))
+   		(assert (smell_value ?smell_value)))
+
+	(if (member specific_gravity ?typeOfmetric)	
+	then
+		(bind ?specific_gravity_value  (ask_question "Poso einai to specific_gravity( equal_to_1 above_1 below_1 ): " equal_to_1 above_1 below_1 ))
+   		(assert (specific_gravity_value ?specific_gravity_value)))
+
+	
+	(if (member radioactivity ?typeOfmetric)	
+	then
+		(bind ?radioactivity_value  (ask_question "Einai radioactive ( yes no ): " yes no ))
+   		(assert (colour_value ?radioactivity_value)))
+
 )
+;+-----------network-----------
+;+(defrule storeXsuspects   
+;+	(suspect ?y)  
+;+	(object (is-a store)        
+;+		(name ?x) 
+;+		(contents $?contents)                
+;+	 	(downstream ?k))                             
+;+=>         
+;+	(if  (member ?y $?contents )        
+;+	   	(assert (sus_store ?x))  
+;+	)                              
+;+) 
 
 
-(defrule pH_reading
-	(typeOfmetric pH) 
-   =>
-   (bind ?ph_value  (ask_question_number "Poso einai to pH: " ))
-   (assert (ph_value ?ph_value))
-   ;+(printout t "Given pH : " ?ph_value crlf)
-)
 
-(defrule specific_gravity_reading
-	(typeOfmetric specific_gravity) 
-   =>
-   (bind ?specific_gravity_value  (ask_question "Poso einai to specific_gravity( equal_to_1 above_1 below_1 ): " equal_to_1 above_1 below_1 ))
-   (assert (specific_gravity_value ?specific_gravity_value))
-   (printout t "Given specific_gravity : " ?specific_gravity_value crlf)
-)
 
-(defrule solubility_reading
-	(typeOfmetric solubility) 
-   =>
-   (bind ?solubility_value  (ask_question "Poio einai to solubility( soluble insoluble ) : " soluble insoluble ))
-   (assert (solubility_value ?solubility_value))
-   (printout t "Given solubility : " ?solubility_value crlf)
-)
+;+-----------Assert all chemicals suspect-------------
 
-(defrule colour_reading
-	(typeOfmetric colour) 
-   =>
-   (bind ?colour_value  (ask_question "Poso einai to colour( clear red white ): " clear red white ))
-   (assert (colour_value ?colour_value))
-   (printout t "Given colour : " ?colour_value crlf)
-)
-
-(defrule radioactivity_reading
-	(typeOfmetric radioactivity) 
-   =>
-   (bind ?radioactivity_value  (ask_question "Einai radioactive ( yes no ): " yes no ))
-   (assert (colour_value ?radioactivity_value))
-   (printout t "Given radioactivity : " ?radioactivity_value crlf)
-)
-
-(defrule smell_reading 
-	(typeOfmetric smell) 
-   =>
-   (bind ?smell_value  (ask_question "Poio einai to smell ( none vinegar choking ): " none vinegar choking ))
-   (assert (colour_value ?smell_value))
-   (printout t "Given smell : " ?smell_value crlf)
-)
-
-(defrule hazards_reading
-	(typeOfmetric hazards) 
-   =>
-   (bind ?hazards_value  (ask_question "Poia einai ta hazards ( asphyxiation burns_skin explosive highly_toxic_PCBs ): " asphyxiation burns_skin explosive highly_toxic_PCBs ))
-   (assert (hazards_value ?hazards_value))
-   (printout t "Given hazards : " ?hazards_value crlf)
-)
-
-(defrule spectrometry_reading 
-	(typeOfmetric spectrometry) 
-   =>
-   (bind ?spectrometry_value  (ask_question "Ti timh exei to spectrometry ( none sulphur carbon sodium metal ): " none sulphur carbon sodium metal ))
-   (assert (spectrometry_value ?spectrometry_value))
-   (printout t "Given spectrometry : " ?spectrometry_value crlf)
-)
-
-(defrule suspect_pH
-  (ph_value ?pH)
-  (object (is-a chemical)
-     (name ?x)
-     (pH-high ?phH)
-     (pH-low ?phL))
+(defrule assert_all_chems "All chemical suspects"
+   	(object (is-a chemical)
+    	(name ?x))
 =>
-    (if (and(> ?pH ?phL) (< ?pH ?phH))
-	  then
-      (assert (suspect ?x))
-      (printout t "Chemical:" ?pH ?phH crlf)
+   (assert (suspect ?x))
+)
+;+-----------Retract mismatch-------------           
+(defrule retract_pH
+	(ph_value ?pH)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(pH-high ?phH)
+    	(pH-low ?phL)
+	)
+=>
+   (if (and (eq ?x ?sus) (or(< ?pH ?phL) (> ?pH ?phH)))
+   then
+		(retract ?y)
+   		(printout t "retract_pH : " ?x  crlf)
     )
 )
+(defrule retract_colour
+	(colour_value ?colour_value)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(colour ?colour)
+	)
+=>
+   (if (and (eq ?x ?sus) (neq ?colour ?colour_value))
+   then
+		(retract ?y)
+   		(printout t "retract_colour : " ?x  crlf)
+    )
+)
+
+(defrule retract_radioactivity
+	(radioactivity_value ?radioactivity_value)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(radioactivity ?radioactivity)
+	)
+=>
+   (if (and (eq ?x ?sus) (neq ?radioactivity ?radioactivity_value))
+   then
+		(retract ?y)
+   		(printout t "retract_radioactivity : " ?x  crlf)
+    )
+)
+
+(defrule retract_smell
+	(smell_value ?smell_value)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(smell ?smell)
+	)
+=>
+   (if (and (eq ?x ?sus) (neq ?smell ?smell_value))
+   then
+		(retract ?y)
+   		(printout t "retract_smell : " ?x  crlf)
+    )
+)
+
+(defrule retract_solubility
+	(solubility_value ?solubility_value)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(solubility ?solubility)
+	)
+=>
+   (if (and (eq ?x ?sus) (neq ?solubility ?solubility_value))
+   then
+		(retract ?y)
+   		(printout t "retract_solubility : " ?x  crlf)
+    )
+)
+
+(defrule retract_specific_gravity
+	(specific_gravity_value ?specific_gravity_value)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(specific_gravity ?specific_gravity)
+	)
+=>
+   (if (and (eq ?x ?sus) (neq ?specific_gravity ?specific_gravity_value))
+   then
+		(retract ?y)
+   		(printout t "retract_specific_gravity : " ?x  crlf)
+    )
+)
+
+(defrule retract_spectrometry
+	(spectrometry_value ?spectrometry_value)
+  	?y<-(suspect ?sus)
+   	(object (is-a chemical)
+    	(name ?x)
+    	(spectrometry ?spectrometry)
+	)
+=>
+   (if (and (eq ?x ?sus) (neq ?spectrometry ?spectrometry_value))
+   then
+		(retract ?y)
+   		(printout t "retract_spectrometry : " ?x  crlf)
+    )
+)
+
 
 
 ;+--------------------------------------------------------------------------------NOTES---------------------------------------------------------------------------------
 ;+colour          
 ;+hazards         
-;+pH-high         
-;+pH-low          
+;+pH       
 ;+radioactivity   
 ;+smell           
 ;+solubility      
