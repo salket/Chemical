@@ -191,7 +191,23 @@
       (bind ?answer (read)))
     ?answer)
 
-
+(deffunction ask_question_sp (?question )
+   (printout t ?question)
+   (bind ?answer (read))
+   (while ( not(and ( >= ?answer 0.9) ( <= ?answer 1.1))) do
+      (printout t "Given wrong input  : " ?answer crlf)
+	  (printout t ?question)
+      (bind ?answer (read)))
+	(if (> ?answer 1)	
+	then
+		(bind ?re above_1))
+	(if (< ?answer 1)	
+	then
+		(bind ?re below_1))
+	(if (= ?answer 1)	
+	then
+		(bind ?re equal_1))
+    ?re)
 ;+--------------------------------------------------------------------------------RULES---------------------------------------------------------------------------------
 
 ;+------------Input------------
@@ -229,7 +245,7 @@
 
 	(if (member specific_gravity ?typeOfmetric)	
 	then
-		(bind ?specific_gravity_value  (ask_question "Poso einai to specific_gravity( equal_to_1 above_1 below_1 ): " equal_to_1 above_1 below_1 ))
+		(bind ?specific_gravity_value  (ask_question_sp "Poso einai to specific_gravity(0.9-1.1 ): " ))
    		(assert (specific_gravity_value ?specific_gravity_value)))
 
 	
@@ -264,36 +280,30 @@
 	(if (eq ?y ?x)
 	then
 		(printout t "store : " ?y "downstream : " ?downstream crlf)
-		(assert (sus_manhole ?downstream))  )                   
+		(assert (suspect_manhole ?downstream))  )                   
 ) 
 
 
 (defrule manholeXsuspects   
 	(declare (salience -3))
-	(sus_manhole ?y)  
+	(suspect_manhole ?y)  
 	(object (is-a manhole)        
 		(name ?x) 
-		(downstream ?downstream))                             
+		(downstream ?downstream))        
 =>   
- (if (eq ?y ?x)
- then
-	(assert (connected ?x ?downstream)) )                     
-) 
-
-(defrule manholeXsuspects1   
+(if (eq ?y ?x)
+then
+	(assert (connected ?x ?downstream))
+	(assert (suspect_manhole ?downstream)))
+)                     
+ 
+(defrule deletemanhole   
 	(declare (salience -4))
-	(sus_manhole ?y)  
-	(object (is-a manhole)        
-		(name ?x) 
-		(downstream ?downstream))                             
+	?y<-(suspect_manhole ?x)        
 =>   
- (if (eq ?y ?x)
- then
-	(assert (connected ?x ?downstream)) )                     
-) 
-
-
-
+(retract ?y)
+)                     
+ 
 
 
 
